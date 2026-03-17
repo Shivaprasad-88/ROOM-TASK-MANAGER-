@@ -1,25 +1,28 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import firebaseConfig from '../firebase-applet-config.json';
+import { initializeApp } from "firebase/app";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  setPersistence, 
+  browserLocalPersistence 
+} from "firebase/auth";
 
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
-export const googleProvider = new GoogleAuthProvider();
+
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(auth, googleProvider);
 
-    console.log("Login success", result.user);
+    // Fix sessionStorage problem
+    await setPersistence(auth, browserLocalPersistence);
 
-    // redirect back to Android app
-    window.location.href = "myapp://login";
+    const result = await signInWithPopup(auth, provider);
+
+    console.log("Login success:", result.user);
 
   } catch (error) {
-    console.error("Error signing in with Google", error);
+    console.error("Google login error:", error);
   }
 };
-
-export const logout = () => signOut(auth);
