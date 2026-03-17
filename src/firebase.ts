@@ -10,7 +10,13 @@ export const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
   try {
-    await signInWithPopup(auth, googleProvider);
+    const result = await signInWithPopup(auth, googleProvider);
+
+    console.log("Login success", result.user);
+
+    // redirect back to Android app
+    window.location.href = "myapp://login";
+
   } catch (error) {
     console.error("Error signing in with Google", error);
   }
